@@ -1,0 +1,27 @@
+import os
+import win32com.client
+
+def convert_docs_to_pdf(root_folder):
+    word = win32com.client.Dispatch("Word.Application")
+    word.Visible = False
+
+    for subdir, _, files in os.walk(root_folder):
+        for file in files:
+            if file.lower().endswith((".doc", ".docx")):
+                doc_path = os.path.join(subdir, file)
+                pdf_path = os.path.splitext(doc_path)[0] + ".pdf"
+
+                try:
+                    doc = word.Documents.Open(doc_path)
+                    doc.ExportAsFixedFormat(pdf_path, ExportFormat=17)  # 17 = wdExportFormatPDF
+                    doc.Close(False)
+                    print(f"Converted: {doc_path} -> {pdf_path}")
+                except Exception as e:
+                    print(f"Error converting {doc_path}: {e}")
+
+    word.Quit()
+    print("All conversions completed.")
+
+# 🔧 Set your base folder path here:
+base_folder = r"C:\Users\Lenovo\Desktop\24-04\TDSG\Final Draft Report 23-04-251\Annexures - PDF"
+convert_docs_to_pdf(base_folder)
